@@ -7,3 +7,4 @@ public/music/*
 !public/**/.gitkeep
 .DS_Store
 *.whl
+models/

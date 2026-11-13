@@ -8,14 +8,15 @@ Você escreve um roteiro em JSON; o resto é automático.
 
 ```bash
 npm install
+scripts/setup-voz.sh                           # uma vez: baixa a voz
 npm run video -- 001-semana-de-lancamento     # gera out/001-semana-de-lancamento.mp4
 ```
 
 1. **Roteiro** — copie `episodes/001-semana-de-lancamento` para uma pasta nova e edite `episode.json`.
-2. **Voz** — rode `npm run video -- <episodio> --sem-render`. Isso cria `narracao.txt` na pasta do
-   episódio, com a fala de cada cena. Gere cada fala no Voice Studio e salve em
-   `episodes/<episodio>/voice/c01.mp3`, `c02.mp3`… (mp3, wav ou m4a). Cena sem arquivo usa uma voz
-   robótica provisória e o vídeo sai com o selo "VOZ PROVISÓRIA".
+2. **Voz** — gerada automaticamente pelo Kokoro, um modelo de voz aberto que roda local e não tem
+   custo por vídeo. Rode `scripts/setup-voz.sh` uma vez para baixar o modelo. Vozes em português:
+   `pm_alex`, `pm_santa` (masculinas) e `pf_dora` (feminina); escolha e velocidade em `channel.json`.
+   Para usar uma gravação própria numa cena, salve em `episodes/<episodio>/voice/c01.mp3`, `c02.mp3`…
 3. **Gameplay** — coloque os clipes (mp4/mov) em `public/gameplay/gta6/` e `public/gameplay/gta5/`,
    com nomes que descrevam a cena (`cidade-noite.mp4`, `online-assalto.mp4`). Em cada cena do roteiro,
    `"gameplay": "gta6 cidade"` escolhe um clipe cujo caminho contenha essas palavras; sem

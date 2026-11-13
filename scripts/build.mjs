@@ -42,11 +42,19 @@ function voiceFor(id, text) {
       '-ar', '48000', out]);
     return out;
   }
-  placeholderVoice = true;
   const tmp = out.replace('.wav', '.raw.wav');
-  const r = spawnSync('espeak-ng', ['-v', 'pt-br', '-s', '172', '-p', '38', '-w', tmp, text]);
+  const v = channel.voice ?? {};
+  // voz padrão: Kokoro (aberto, local). Sem o modelo instalado, cai na voz robótica provisória.
+  let r = existsSync('models/kokoro-v1.0.onnx')
+    ? spawnSync('python3', ['scripts/tts.py', v.name ?? 'pm_alex', String(v.speed ?? 1.1), tmp, text], {encoding: 'utf8'})
+    : {status: 1, stderr: 'modelo ausente — rode scripts/setup-voz.sh'};
   if (r.status !== 0) {
-    console.error(`\nSem áudio para a cena "${id}". Coloque ${epDir}/voice/${id}.mp3 (Voice Studio) ou instale espeak-ng para a voz provisória.`);
+    console.warn(`  Kokoro indisponível (${String(r.stderr).trim().split('\n').pop()}); usando voz provisória.`);
+    placeholderVoice = true;
+    r = spawnSync('espeak-ng', ['-v', 'pt-br', '-s', '172', '-p', '38', '-w', tmp, text]);
+  }
+  if (r.status !== 0) {
+    console.error(`\nSem áudio para a cena "${id}". Rode scripts/setup-voz.sh ou coloque ${epDir}/voice/${id}.mp3.`);
     process.exit(1);
   }
   execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-i', tmp, '-af', 'loudnorm=I=-16:TP=-1.5', '-ar', '48000', out]);
@@ -148,7 +156,7 @@ const narrationSheet = [];
 const scenes = episode.scenes.map((sc, i) => {
   const id = sc.id ?? `c${String(i + 1).padStart(2, '0')}`;
   const spoken = sc.narration.replace(/\*/g, '');
-  narrationSheet.push(`[${id}]  →  salvar como ${epDir}/voice/${id}.mp3\n${spoken}\n`);
+  narrationSheet.push(`[${id}]  →  para trocar por gravação própria: ${epDir}/voice/${id}.mp3\n${spoken}\n`);
   const file = voiceFor(id, spoken);
   const total = probe(file);
   const words = timeWords(sc.narration, file, total);
@@ -199,7 +207,7 @@ writeFileSync(path.join(epDir, 'narracao.txt'), narrationSheet.join('\n'));
 
 console.log(`\n${episode.title}`);
 console.log(`  ${scenes.length} cenas · ${(cursor / fps).toFixed(1)}s`);
-console.log(`  voz: ${placeholderVoice ? 'PROVISÓRIA (espeak) — grave as falas de narracao.txt no Voice Studio' : 'arquivos do Voice Studio'}`);
+console.log(`  voz: ${placeholderVoice ? 'PROVISÓRIA (espeak) — rode scripts/setup-voz.sh' : `Kokoro (${channel.voice?.name ?? 'pm_alex'}) ou arquivos em voice/`}`);
 scenes.forEach((s) => console.log(`    ${s.id} ${s.type.padEnd(9)} ← ${s.bg ? s.bg.src + ' @' + s.bg.startFrom + 's' : 'fundo provisório'}`));
 console.log(`  gameplay: ${clips.length ? clips.map((c) => c.src).join(', ') : 'nenhum clipe em public/gameplay — usando fundo provisório'}`);
 
