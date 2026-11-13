@@ -6,3 +6,4 @@ public/gameplay/*
 public/music/*
 !public/**/.gitkeep
 .DS_Store
+*.whl
