@@ -5,7 +5,16 @@
   "width": 1080,
   "height": 1920,
   "voice": {
-    "name": "pm_alex",
-    "speed": 1.1
+    "provider": "voicestudio",
+    "url": "http://127.0.0.1:3900",
+    "engine": "voxcpm2",
+    "reference": "voices/locutor.wav",
+    "referenceText": "Falta menos de uma semana pro GTA 6, e tem coisa que muita gente ainda não sabe. O lançamento continua marcado pra dezenove de novembro.",
+    "seed": 7,
+    "tempo": 1.0,
+    "kokoro": {
+      "name": "pm_alex",
+      "speed": 1.1
+    }
   }
 }

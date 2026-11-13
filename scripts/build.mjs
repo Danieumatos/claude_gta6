@@ -29,39 +29,134 @@ const probe = (file) =>
 const norm = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
 
 /* ── 1. voz ─────────────────────────────────────────────────────────── */
+// Ordem: gravação própria em voice/ → VoiceStudio (local, aberto) → Kokoro → voz robótica provisória.
 const AUDIO_EXT = ['.mp3', '.wav', '.m4a', '.ogg', '.flac'];
+const VOICE = channel.voice ?? {};
+const VS_URL = process.env.VOICESTUDIO_URL ?? VOICE.url ?? 'http://127.0.0.1:3900';
 let placeholderVoice = false;
+const voiceUsed = new Set();
 
-function voiceFor(id, text) {
+const vsUp = await fetch(`${VS_URL}/health`, {signal: AbortSignal.timeout(3000)}).then((r) => r.ok, () => false);
+if (VOICE.provider === 'voicestudio' && !vsUp) console.warn(`  VoiceStudio não respondeu em ${VS_URL}; usando a voz reserva.`);
+
+async function voiceStudioTts(text, out) {
+  const form = new FormData();
+  form.set('engine', VOICE.engine ?? 'voxcpm2');
+  form.set('text', text);
+  form.set('language', 'Portuguese (Brazil)');
+  if (VOICE.seed != null) form.set('seed', String(VOICE.seed));
+  if (VOICE.reference) {
+    // clona sempre a mesma referência: o timbre não muda de uma cena para outra
+    form.set('ref_audio', new Blob([readFileSync(VOICE.reference)], {type: 'audio/wav'}), path.basename(VOICE.reference));
+    if (VOICE.referenceText) form.set('ref_text', VOICE.referenceText);
+  } else if (VOICE.design) {
+    form.set('instruct', VOICE.design);
+  }
+  const r = await fetch(`${VS_URL}/generate`, {method: 'POST', body: form});
+  if (!r.ok) throw new Error(`VoiceStudio ${r.status}: ${(await r.text()).slice(0, 200)}`);
+  writeFileSync(out, Buffer.from(await r.arrayBuffer()));
+}
+
+async function voiceFor(id, text) {
   const real = AUDIO_EXT.map((e) => path.join(epDir, 'voice', id + e)).find(existsSync);
   const out = path.join(pubDir, 'voice', `${id}.wav`);
+  const trim = 'silenceremove=start_periods=1:start_threshold=-45dB,areverse,silenceremove=start_periods=1:start_threshold=-45dB,areverse,';
   if (real) {
-    // normaliza volume e remove silêncio das pontas da gravação do Voice Studio
-    execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-i', real, '-af',
-      'silenceremove=start_periods=1:start_threshold=-45dB,areverse,silenceremove=start_periods=1:start_threshold=-45dB,areverse,loudnorm=I=-15:TP=-1.5',
-      '-ar', '48000', out]);
+    execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-i', real, '-af', `${trim}loudnorm=I=-15:TP=-1.5`, '-ar', '48000', out]);
+    voiceUsed.add('gravação própria');
     return out;
   }
   const tmp = out.replace('.wav', '.raw.wav');
-  const v = channel.voice ?? {};
-  // voz padrão: Kokoro (aberto, local). Sem o modelo instalado, cai na voz robótica provisória.
-  let r = existsSync('models/kokoro-v1.0.onnx')
-    ? spawnSync('python3', ['scripts/tts.py', v.name ?? 'pm_alex', String(v.speed ?? 1.1), tmp, text], {encoding: 'utf8'})
-    : {status: 1, stderr: 'modelo ausente — rode scripts/setup-voz.sh'};
-  if (r.status !== 0) {
-    console.warn(`  Kokoro indisponível (${String(r.stderr).trim().split('\n').pop()}); usando voz provisória.`);
-    placeholderVoice = true;
-    r = spawnSync('espeak-ng', ['-v', 'pt-br', '-s', '172', '-p', '38', '-w', tmp, text]);
+  let ok = false;
+  if (VOICE.provider === 'voicestudio' && vsUp) {
+    try {
+      await voiceStudioTts(text, tmp);
+      ok = true;
+      voiceUsed.add(`VoiceStudio ${VOICE.engine ?? 'voxcpm2'}`);
+    } catch (e) {
+      console.warn(`  ${id}: ${e.message}; usando a voz reserva.`);
+    }
   }
-  if (r.status !== 0) {
-    console.error(`\nSem áudio para a cena "${id}". Rode scripts/setup-voz.sh ou coloque ${epDir}/voice/${id}.mp3.`);
+  if (!ok && existsSync('models/kokoro-v1.0.onnx')) {
+    const k = VOICE.kokoro ?? {};
+    ok = spawnSync('python3', ['scripts/tts.py', k.name ?? 'pm_alex', String(k.speed ?? 1.1), tmp, text]).status === 0;
+    if (ok) voiceUsed.add('Kokoro');
+  }
+  if (!ok) {
+    placeholderVoice = true;
+    ok = spawnSync('espeak-ng', ['-v', 'pt-br', '-s', '172', '-p', '38', '-w', tmp, text]).status === 0;
+    if (ok) voiceUsed.add('espeak (provisória)');
+  }
+  if (!ok) {
+    console.error(`\nSem áudio para a cena "${id}". Suba o VoiceStudio, rode scripts/setup-voz.sh ou coloque ${epDir}/voice/${id}.mp3.`);
     process.exit(1);
   }
-  execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-i', tmp, '-af', 'loudnorm=I=-16:TP=-1.5', '-ar', '48000', out]);
+  const tempo = VOICE.tempo && VOICE.tempo !== 1 ? `atempo=${VOICE.tempo},` : '';
+  execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-i', tmp, '-af', `${trim}${tempo}loudnorm=I=-16:TP=-1.5`, '-ar', '48000', out]);
   return out;
 }
 
 /* ── 2. tempo de cada palavra ───────────────────────────────────────── */
+// Com o VoiceStudio no ar, o Whisper dele diz quando cada palavra é falada; sem ele, estima pelas pausas.
+async function asrWords(file) {
+  if (!vsUp) return null;
+  try {
+    const form = new FormData();
+    form.set('file', new Blob([readFileSync(file)], {type: 'audio/wav'}), 'fala.wav');
+    form.set('language', 'pt');
+    form.set('response_format', 'verbose_json');
+    form.append('timestamp_granularities[]', 'word');
+    const r = await fetch(`${VS_URL}/v1/audio/transcriptions`, {method: 'POST', body: form});
+    if (!r.ok) return null;
+    const words = (await r.json()).words ?? [];
+    return words.length ? words.map((w) => ({n: norm(w.word), start: w.start, end: w.end})) : null;
+  } catch {
+    return null;
+  }
+}
+
+const same = (a, b) => a === b || (a.length >= 3 && b.length >= 3 && (a.startsWith(b) || b.startsWith(a)));
+
+/** Casa as palavras do roteiro com as reconhecidas (maior subsequência comum) e interpola as que sobram. */
+function alignWords(tokens, heard, total) {
+  const A = tokens.map((t) => norm(t.t));
+  const n = A.length, m = heard.length;
+  const L = Array.from({length: n + 1}, () => new Int16Array(m + 1));
+  for (let i = n - 1; i >= 0; i--)
+    for (let j = m - 1; j >= 0; j--)
+      L[i][j] = same(A[i], heard[j].n) ? L[i + 1][j + 1] + 1 : Math.max(L[i + 1][j], L[i][j + 1]);
+  const hit = new Array(n).fill(null);
+  for (let i = 0, j = 0; i < n && j < m; ) {
+    if (same(A[i], heard[j].n)) hit[i++] = heard[j++];
+    else if (L[i + 1][j] >= L[i][j + 1]) i++;
+    else j++;
+  }
+  if (hit.filter(Boolean).length < n * 0.5) return null; // reconhecimento ruim demais: melhor estimar
+  const weight = (t) => Math.max(2, norm(t.t).length) + 1.5;
+  const out = [];
+  for (let i = 0; i < n; ) {
+    if (hit[i]) {
+      out.push({start: hit[i].start, end: hit[i].end});
+      i++;
+      continue;
+    }
+    let k = i;
+    while (k < n && !hit[k]) k++;
+    const a = i ? out[i - 1].end : 0;
+    const b = k < n ? hit[k].start : total;
+    const run = tokens.slice(i, k);
+    const sum = run.reduce((s, t) => s + weight(t), 0);
+    let t = a;
+    for (const tok of run) {
+      const d = (weight(tok) / sum) * Math.max(0.05, b - a);
+      out.push({start: t, end: t + d});
+      t += d;
+    }
+    i = k;
+  }
+  return out;
+}
+
 function silences(file, total) {
   const r = spawnSync('ffmpeg', ['-i', file, '-af', 'silencedetect=noise=-34dB:d=0.13', '-f', 'null', '-'], {encoding: 'utf8'});
   const starts = [...r.stderr.matchAll(/silence_start: ([\d.]+)/g)].map((m) => +m[1]);
@@ -71,11 +166,16 @@ function silences(file, total) {
     .filter((x) => x.s > 0.08 && x.e < total - 0.08); // só pausas internas
 }
 
-function timeWords(text, file, total) {
-  const tokens = text.split(/\s+/).filter(Boolean).map((raw) => {
-    const hl = /\*/.test(raw);
-    return {t: raw.replace(/\*/g, ''), hl};
-  });
+let syncedBy = new Set();
+async function timeWords(text, file, total) {
+  const tokens = text.split(/\s+/).filter(Boolean).map((raw) => ({t: raw.replace(/\*/g, ''), hl: /\*/.test(raw)}));
+  const heard = await asrWords(file);
+  const aligned = heard && alignWords(tokens, heard, total);
+  if (aligned) {
+    syncedBy.add('Whisper');
+    return tokens.map((w, i) => ({t: w.t, start: +aligned[i].start.toFixed(3), end: +aligned[i].end.toFixed(3), ...(w.hl ? {hl: true} : {})}));
+  }
+  syncedBy.add('pausas do áudio');
   const weight = (w) => Math.max(2, norm(w.t).length) + 1.5;
   // frases = trechos entre pontuações; cada pausa detectada no áudio ancora uma frase
   const phrases = [[]];
@@ -95,7 +195,6 @@ function timeWords(text, file, total) {
       start = sil[i] ? sil[i].e : end;
     });
   } else {
-    // sem correspondência exata: distribui pelo tamanho das palavras, com respiro na pontuação
     const pauseOf = (p) => (/[.!?…]$/.test(p[p.length - 1].t) ? 5 : 2.5);
     const w = phrases.map((p) => p.reduce((n, x) => n + weight(x), 0));
     const sum = w.reduce((a, b) => a + b, 0) + phrases.slice(0, -1).reduce((n, p) => n + pauseOf(p), 0);
@@ -153,13 +252,15 @@ const TAIL = 9; // frames de respiro depois da voz
 let cursor = 0;
 const narrationSheet = [];
 
-const scenes = episode.scenes.map((sc, i) => {
+const scenes = [];
+for (const [i, sc] of episode.scenes.entries()) {
   const id = sc.id ?? `c${String(i + 1).padStart(2, '0')}`;
   const spoken = sc.narration.replace(/\*/g, '');
   narrationSheet.push(`[${id}]  →  para trocar por gravação própria: ${epDir}/voice/${id}.mp3\n${spoken}\n`);
-  const file = voiceFor(id, spoken);
+  process.stdout.write(`  voz ${id}…\r`);
+  const file = await voiceFor(id, spoken);
   const total = probe(file);
-  const words = timeWords(sc.narration, file, total);
+  const words = await timeWords(sc.narration, file, total);
   const duration = LEAD + Math.ceil(total * fps) + TAIL;
 
   // cues: cada item de lista/linha do tempo aparece quando a narração fala a palavra-chave
@@ -187,8 +288,8 @@ const scenes = episode.scenes.map((sc, i) => {
     transition: sc.transition ?? TRANSITIONS[i % TRANSITIONS.length],
   };
   cursor += duration;
-  return scene;
-});
+  scenes.push(scene);
+}
 
 const music = episode.music && existsSync(path.join('public/music', episode.music)) ? `music/${episode.music}` : null;
 const timeline = {
@@ -207,7 +308,8 @@ writeFileSync(path.join(epDir, 'narracao.txt'), narrationSheet.join('\n'));
 
 console.log(`\n${episode.title}`);
 console.log(`  ${scenes.length} cenas · ${(cursor / fps).toFixed(1)}s`);
-console.log(`  voz: ${placeholderVoice ? 'PROVISÓRIA (espeak) — rode scripts/setup-voz.sh' : `Kokoro (${channel.voice?.name ?? 'pm_alex'}) ou arquivos em voice/`}`);
+console.log(`  voz: ${[...voiceUsed].join(' + ')}${placeholderVoice ? ' — suba o VoiceStudio ou rode scripts/setup-voz.sh' : ''}`);
+console.log(`  legendas sincronizadas por: ${[...syncedBy].join(' + ')}`);
 scenes.forEach((s) => console.log(`    ${s.id} ${s.type.padEnd(9)} ← ${s.bg ? s.bg.src + ' @' + s.bg.startFrom + 's' : 'fundo provisório'}`));
 console.log(`  gameplay: ${clips.length ? clips.map((c) => c.src).join(', ') : 'nenhum clipe em public/gameplay — usando fundo provisório'}`);
 
