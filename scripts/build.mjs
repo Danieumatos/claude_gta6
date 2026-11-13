@@ -114,14 +114,23 @@ function timeWords(text, file, total) {
 
 /* ── 3. gameplay ────────────────────────────────────────────────────── */
 const VIDEO_EXT = ['.mp4', '.mov', '.webm', '.mkv'];
-const clips = (existsSync('public/gameplay') ? readdirSync('public/gameplay') : [])
+const walk = (dir) =>
+  !existsSync(dir) ? [] : readdirSync(dir, {withFileTypes: true}).flatMap((d) => (d.isDirectory() ? walk(path.join(dir, d.name)) : [path.join(dir, d.name)]));
+const clips = walk('public/gameplay')
   .filter((f) => VIDEO_EXT.includes(path.extname(f).toLowerCase()))
   .sort()
-  .map((f) => ({src: `gameplay/${f}`, dur: probe(path.join('public/gameplay', f)), cursor: 0}));
+  .map((f) => ({src: path.relative('public', f).split(path.sep).join('/'), dur: probe(f), cursor: 0, used: 0}));
 
+// "gameplay" da cena = palavras que precisam aparecer no caminho do clipe (pasta ou nome),
+// ex.: "gta6 cidade" casa com public/gameplay/gta6/cidade-noite.mp4. Entre os que casam, usa o menos usado.
 function bgFor(index, seconds, wanted) {
   if (!clips.length) return null;
-  const clip = (wanted && clips.find((c) => c.src.endsWith(wanted))) || clips[index % clips.length];
+  const keys = (wanted ?? '').split(/\s+/).filter(Boolean).map(norm);
+  let pool = clips.filter((c) => keys.every((k) => norm(c.src).includes(k)));
+  if (!pool.length && keys.length) pool = clips.filter((c) => norm(c.src).includes(keys[0]));
+  if (!pool.length) pool = clips;
+  const clip = [...pool].sort((a, b) => a.used - b.used)[0];
+  clip.used++;
   if (clip.dur < seconds + 1) return {src: clip.src, startFrom: 0, loopFrames: Math.floor(clip.dur * fps) - 1};
   if (clip.cursor + seconds + 1 > clip.dur) clip.cursor = 0;
   const bg = {src: clip.src, startFrom: +clip.cursor.toFixed(2), loopFrames: null};
@@ -191,6 +200,7 @@ writeFileSync(path.join(epDir, 'narracao.txt'), narrationSheet.join('\n'));
 console.log(`\n${episode.title}`);
 console.log(`  ${scenes.length} cenas · ${(cursor / fps).toFixed(1)}s`);
 console.log(`  voz: ${placeholderVoice ? 'PROVISÓRIA (espeak) — grave as falas de narracao.txt no Voice Studio' : 'arquivos do Voice Studio'}`);
+scenes.forEach((s) => console.log(`    ${s.id} ${s.type.padEnd(9)} ← ${s.bg ? s.bg.src + ' @' + s.bg.startFrom + 's' : 'fundo provisório'}`));
 console.log(`  gameplay: ${clips.length ? clips.map((c) => c.src).join(', ') : 'nenhum clipe em public/gameplay — usando fundo provisório'}`);
 
 if (flag('sem-render')) process.exit(0);
