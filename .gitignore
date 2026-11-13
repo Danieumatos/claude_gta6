@@ -1,0 +1,8 @@
+node_modules/
+out/
+public/ep/
+public/sfx/
+public/gameplay/*
+public/music/*
+!public/**/.gitkeep
+.DS_Store

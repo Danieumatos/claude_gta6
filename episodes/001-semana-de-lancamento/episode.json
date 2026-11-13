@@ -1,0 +1,59 @@
+{
+  "title": "GTA 6: tudo o que está confirmado na semana do lançamento",
+  "music": "trilha.mp3",
+  "scenes": [
+    {
+      "type": "hook",
+      "narration": "Falta menos de *uma* *semana* pro GTA 6, e tem coisa que muita gente ainda não sabe.",
+      "props": {"kicker": "URGENTE", "lines": ["GTA 6", "EM *6 DIAS*"]}
+    },
+    {
+      "type": "headline",
+      "narration": "Primeiro, a data. O lançamento continua marcado pra *dezenove* de *novembro*, e a Take-Two reafirmou isso no último balanço. Sem novo adiamento.",
+      "props": {"tag": "CONFIRMADO", "title": "LANÇAMENTO: *19 DE NOVEMBRO*", "source": "Take-Two, balanço trimestral"}
+    },
+    {
+      "type": "timeline",
+      "narration": "E olha o caminho até aqui. Era pra sair no fim de dois mil e vinte e cinco. Depois, passou pra maio de dois mil e vinte e seis. E só então veio a data final, em novembro.",
+      "props": {
+        "title": "DOIS *ADIAMENTOS*",
+        "points": [
+          {"date": "FIM DE 2025", "label": "Primeira janela anunciada", "status": "cancelado", "cue": "fim"},
+          {"date": "26 MAI 2026", "label": "Segunda data", "status": "cancelado", "cue": "maio"},
+          {"date": "19 NOV 2026", "label": "Data final", "status": "agora", "cue": "final"}
+        ]
+      }
+    },
+    {
+      "type": "stat",
+      "narration": "Agora, o preço. A edição padrão sai por *setenta* e *nove* dólares e noventa e nove nos Estados Unidos.",
+      "props": {"tag": "OFICIAL", "label": "EDIÇÃO PADRÃO", "prefix": "US$", "value": 79.99, "decimals": 2, "sub": "preço nos *Estados Unidos*"}
+    },
+    {
+      "type": "list",
+      "narration": "Três coisas pra você já deixar no radar. O pré-download já está liberado. Quem compra na pré-venda leva o pacote Vintage Vice City. E o jogo chega primeiro no PlayStation 5 e no Xbox Series.",
+      "props": {
+        "title": "ANOTA *AÍ*",
+        "items": [
+          {"text": "*Pré-download* já liberado", "cue": "pre-download"},
+          {"text": "Pré-venda dá o pacote *Vintage Vice City*", "cue": "compra"},
+          {"text": "Chega em *PS5* e *Xbox Series*", "cue": "chega"}
+        ]
+      }
+    },
+    {
+      "type": "compare",
+      "narration": "E quem joga no PC? Por enquanto, nada. Não existe data pra versão de computador. E o GTA Online novo é esperado só pra dois mil e vinte e sete.",
+      "props": {
+        "title": "E O *RESTO*?",
+        "left": {"label": "Versão PC", "value": "SEM DATA", "note": "nada anunciado"},
+        "right": {"label": "GTA Online", "value": "2027", "note": "previsão"}
+      }
+    },
+    {
+      "type": "cta",
+      "narration": "Me segue, que eu vou trazer tudo do GTA 6, todo dia, até o lançamento.",
+      "props": {"title": "*SEGUE* AÍ", "sub": "GTA 6 todo dia até o lançamento"}
+    }
+  ]
+}
