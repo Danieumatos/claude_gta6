@@ -1,5 +1,5 @@
 import React from 'react';
-import {AbsoluteFill, Audio, Sequence, staticFile} from 'remotion';
+import {AbsoluteFill, Audio, Sequence, interpolate, staticFile} from 'remotion';
 import {BgLayer, Scrim, Streak} from './Background';
 import {Captions} from './Captions';
 import {Chrome} from './Chrome';
@@ -10,6 +10,15 @@ import type {Timeline} from './types';
 export const Video: React.FC<{timeline: Timeline}> = ({timeline}) => {
   const half = Math.floor(TRANSITION_FRAMES / 2);
   const {scenes} = timeline;
+  // trechos com fala (em quadros); a música abaixa neles e sobe nos respiros
+  const speech = scenes
+    .filter((s) => s.words.length)
+    .map((s) => [s.from + s.audioLead + s.words[0].start * timeline.fps, s.from + s.audioLead + s.words[s.words.length - 1].end * timeline.fps]);
+  const base = timeline.musicVolume ?? 0.2;
+  const musicLevel = (f: number) => {
+    const gap = Math.min(...speech.map(([a, b]) => (f < a ? a - f : f > b ? f - b : 0)));
+    return interpolate(gap, [0, 10], [base * 0.42, base], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+  };
   return (
     <AbsoluteFill style={{background: C.ink}}>
       {/* 1. gameplay: uma camada por cena, com transição por cima da anterior */}
@@ -59,7 +68,7 @@ export const Video: React.FC<{timeline: Timeline}> = ({timeline}) => {
           <Audio src={staticFile(s.audio)} />
         </Sequence>
       ))}
-      {timeline.music ? <Audio src={staticFile(timeline.music)} volume={0.1} loop /> : null}
+      {timeline.music ? <Audio src={staticFile(timeline.music)} volume={(f) => musicLevel(f)} loop /> : null}
     </AbsoluteFill>
   );
 };

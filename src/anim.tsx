@@ -24,7 +24,7 @@ export const useExit = (duration: number, len = 8) => {
 };
 
 /** Texto com *destaque* entre asteriscos. */
-export const Rich: React.FC<{text: string; color?: string}> = ({text, color = C.yellow}) => (
+export const Rich: React.FC<{text: string; color?: string}> = ({text, color = C.accent}) => (
   <>
     {text.split(/(\*[^*]+\*)/g).map((part, i) =>
       part.startsWith('*') && part.endsWith('*') ? (

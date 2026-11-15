@@ -1,6 +1,6 @@
 {
   "title": "GTA 6: tudo o que está confirmado na semana do lançamento",
-  "music": "trilha.mp3",
+  "music": "synthwave-104.wav",
   "scenes": [
     {
       "type": "hook",
@@ -112,7 +112,8 @@
         "title": "*SEGUE* AÍ",
         "sub": "GTA 6 todo dia até o lançamento"
       },
-      "gameplay": "gta6 pier-pulo-mar"
+      "gameplay": "gta6 pier-pulo-mar",
+      "hold": 2.5
     }
   ]
 }

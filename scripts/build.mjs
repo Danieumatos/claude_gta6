@@ -289,11 +289,11 @@ for (const [i, sc] of episode.scenes.entries()) {
     else if (existsSync(cacheFile)) rmSync(cacheFile);
   }
   const total = probe(file);
-  const duration = LEAD + Math.ceil(total * fps) + TAIL;
+  const duration = LEAD + Math.ceil(total * fps) + TAIL + Math.round((sc.hold ?? 0) * fps);
 
   // cues: cada item de lista/linha do tempo aparece quando a narração fala a palavra-chave
   const props = structuredClone(sc.props ?? {});
-  if (sc.type === 'cta' && !props.handle) props.handle = channel.handle;
+  if (sc.type === 'cta' && !props.socials) props.socials = channel.socials ?? [];
   const cued = props.items ?? props.points;
   if (Array.isArray(cued)) {
     cued.forEach((it, k) => {
@@ -319,7 +319,16 @@ for (const [i, sc] of episode.scenes.entries()) {
   scenes.push(scene);
 }
 
-const music = episode.music && existsSync(path.join('public/music', episode.music)) ? `music/${episode.music}` : null;
+let music = null;
+if (episode.music) {
+  const file = path.join('public/music', episode.music);
+  const need = cursor / fps + 1;
+  if (episode.music.startsWith('synthwave') && (!existsSync(file) || probe(file) < need)) {
+    mkdirSync('public/music', {recursive: true});
+    execFileSync('python3', ['scripts/musica.py', file, String(Math.ceil(need + 1)), String(episode.bpm ?? 104)], {stdio: 'inherit'});
+  }
+  if (existsSync(file)) music = `music/${episode.music}`;
+}
 const timeline = {
   fps,
   width: channel.width,
@@ -327,6 +336,7 @@ const timeline = {
   durationInFrames: cursor,
   channel: {name: channel.name, handle: channel.handle},
   music,
+  musicVolume: episode.musicVolume ?? 0.2,
   placeholderVoice,
   scenes,
 };

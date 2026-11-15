@@ -1,7 +1,8 @@
 import React from 'react';
 import {AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig} from 'remotion';
 import {clamp, usePop} from './anim';
-import {BODY, C, DISPLAY, GRAD} from './theme';
+import {Emblem, Wordmark} from './Brand';
+import {BODY, C, GRAD} from './theme';
 import type {Timeline} from './types';
 
 /** Elementos fixos: selo do canal e barra de progresso segmentada por cena. */
@@ -29,28 +30,16 @@ export const Chrome: React.FC<{timeline: Timeline}> = ({timeline}) => {
       <div
         style={{
           position: 'absolute',
-          top: 124,
-          left: 48,
+          top: 122,
+          left: 40,
           display: 'flex',
           alignItems: 'center',
           gap: 14,
           transform: `translateX(${(1 - pop) * -300}px)`,
         }}
       >
-        <div
-          style={{
-            fontFamily: DISPLAY,
-            fontSize: 34,
-            letterSpacing: 2,
-            color: C.white,
-            background: GRAD,
-            padding: '6px 20px 4px',
-            borderRadius: 12,
-            transform: 'skewX(-8deg)',
-          }}
-        >
-          {timeline.channel.name}
-        </div>
+        <Emblem size={96} />
+        <Wordmark lines={timeline.channel.name.replace(/^(\S+)\s+/, '$1\n').split("\n")} size={40} />
         <div style={{display: 'flex', alignItems: 'center', gap: 8, fontFamily: BODY, fontWeight: 800, fontSize: 22, color: C.white, letterSpacing: 2}}>
           <div style={{width: 14, height: 14, borderRadius: 7, background: C.red, opacity: pulse, boxShadow: `0 0 14px ${C.red}`}} />
           {Math.max(0, Math.ceil((durationInFrames - frame) / timeline.fps))}s

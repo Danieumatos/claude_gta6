@@ -1,6 +1,7 @@
 import React from 'react';
 import {AbsoluteFill, Img, interpolate, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {Pop, Rich, clamp, panel, useEase, useExit, usePop} from '../anim';
+import {Emblem, PlatformBadge} from '../Brand';
 import {BODY, C, DISPLAY, GRAD, SAFE} from '../theme';
 
 type P<T = any> = {props: T; duration: number};
@@ -304,7 +305,7 @@ const Compare: React.FC<P<{title?: string; left: Side; right: Side}>> = ({props,
               height: 120,
               margin: '-60px 0 0 -60px',
               borderRadius: 60,
-              background: C.yellow,
+              background: C.accent,
               color: C.ink,
               fontFamily: DISPLAY,
               fontSize: 60,
@@ -430,43 +431,69 @@ const ImageScene: React.FC<P<{src: string; caption?: string; tag?: string}>> = (
   );
 };
 
-/* ───────── cta: chamada final ───────── */
-const Cta: React.FC<P<{title: string; sub?: string; handle?: string}>> = ({props, duration}) => {
+/* ───────── cta: chamada final com as redes do canal ───────── */
+type Social = {platform: string; label: string; handle: string};
+
+const SocialRow: React.FC<{s: Social; delay: number}> = ({s, delay}) => {
   const frame = useCurrentFrame();
-  const beat = 1 + 0.04 * Math.sin(frame / 4);
+  const badge = usePop(delay, 10, 220);
+  const card = useEase(delay + 7, 13); // o card sai de trás do logo
+  const shine = interpolate(frame, [delay + 18, delay + 34], [-30, 130], clamp);
   return (
-    <Stage duration={duration}>
-      <div style={{textAlign: 'center'}}>
-        <Pop from="scale">
-          <div style={title(150)}>
-            <Rich text={props.title} />
-          </div>
-        </Pop>
+    <div style={{position: 'relative', height: 150, display: 'flex', alignItems: 'center'}}>
+      <div style={{position: 'absolute', left: 60, top: 18, height: 114, right: 0, overflow: 'hidden', borderRadius: 26}}>
+        <div
+          style={{
+            ...panel,
+            height: '100%',
+            borderRadius: 26,
+            borderColor: `${C.cyan}88`,
+            paddingLeft: 108,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            transform: `translateX(${(card - 1) * 105}%)`,
+            backgroundImage: `linear-gradient(105deg, transparent ${shine - 12}%, rgba(255,255,255,0.16) ${shine}%, transparent ${shine + 12}%), linear-gradient(160deg, rgba(20,10,38,0.95), rgba(11,6,20,0.92))`,
+          }}
+        >
+          <div style={{fontFamily: BODY, fontWeight: 800, fontSize: 26, letterSpacing: 3, color: C.cyan}}>{s.label.toUpperCase()}</div>
+          <div style={{fontFamily: BODY, fontWeight: 900, fontSize: 48, color: C.white, lineHeight: 1.1, whiteSpace: 'nowrap'}}>{s.handle}</div>
+        </div>
+      </div>
+      <div style={{position: 'relative', transform: `scale(${badge}) rotate(${(1 - badge) * -25}deg)`}}>
+        <PlatformBadge platform={s.platform} size={132} />
+      </div>
+    </div>
+  );
+};
+
+const Cta: React.FC<P<{title: string; sub?: string; socials?: Social[]}>> = ({props, duration}) => {
+  const socials = props.socials ?? [];
+  return (
+    <Stage duration={duration} justify="flex-start">
+      <div style={{width: '100%', paddingTop: 30}}>
+        <div style={{display: 'flex', alignItems: 'center', gap: 26, justifyContent: 'center'}}>
+          <Pop from="scale">
+            <Emblem size={150} />
+          </Pop>
+          <Pop delay={3} from="right">
+            <div style={title(132)}>
+              <Rich text={props.title} />
+            </div>
+          </Pop>
+        </div>
         {props.sub ? (
-          <Pop delay={8}>
-            <div style={{fontFamily: BODY, fontWeight: 800, fontSize: 46, color: C.white, marginTop: 20, textShadow: '0 6px 24px rgba(0,0,0,0.8)'}}>
+          <Pop delay={6}>
+            <div style={{fontFamily: BODY, fontWeight: 800, fontSize: 42, color: C.white, textAlign: 'center', marginTop: 8, textShadow: '0 6px 24px rgba(0,0,0,0.85)'}}>
               <Rich text={props.sub} />
             </div>
           </Pop>
         ) : null}
-        <Pop delay={14} from="scale">
-          <div
-            style={{
-              display: 'inline-block',
-              marginTop: 44,
-              fontFamily: DISPLAY,
-              fontSize: 70,
-              color: C.white,
-              background: GRAD,
-              padding: '22px 60px 16px',
-              borderRadius: 60,
-              transform: `scale(${beat})`,
-              boxShadow: `0 0 70px ${C.pink}`,
-            }}
-          >
-            SEGUIR {props.handle ?? ''}
-          </div>
-        </Pop>
+        <div style={{marginTop: 46, display: 'flex', flexDirection: 'column', gap: 26}}>
+          {socials.map((s, i) => (
+            <SocialRow key={s.platform} s={s} delay={10 + i * 9} />
+          ))}
+        </div>
       </div>
     </Stage>
   );

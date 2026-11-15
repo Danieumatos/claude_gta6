@@ -22,8 +22,9 @@ export type Timeline = {
   width: number;
   height: number;
   durationInFrames: number;
-  channel: {name: string; handle: string};
+  channel: {name: string; handle: string; socials?: {platform: string; label: string; handle: string}[]};
   music: string | null;
+  musicVolume?: number;
   placeholderVoice: boolean;
   scenes: SceneData[];
 };

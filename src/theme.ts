@@ -1,13 +1,15 @@
 export const C = {
-  pink: '#FF2E93',
+  pink: '#FF2E8F',
   purple: '#7B2FF7',
   orange: '#FF8A00',
-  cyan: '#21E6F2',
+  cyan: '#3DF0FF',
   yellow: '#FFE14A',
   green: '#3DFF8B',
   red: '#FF3B47',
-  ink: '#0B0614',
+  ink: '#0D0814',
   white: '#FFFFFF',
+  /** destaque da marca (ciano do contorno do logo) */
+  accent: '#3DF0FF',
 };
 
 export const GRAD = `linear-gradient(100deg, ${C.orange} 0%, ${C.pink} 50%, ${C.purple} 100%)`;

@@ -26,8 +26,16 @@ npm run video -- 001-semana-de-lancamento     # gera out/001-semana-de-lancament
    correspondência, usa qualquer clipe do mesmo jogo. Trechos não se repetem enquanto houver material.
 4. **Render** — `npm run video -- <episodio>`.
 
+Identidade do canal: nome, @ e redes em `channel.json` (as redes aparecem com logo e card na cena `cta`); o
+emblema fica em `public/brand/emblema.png`; cores em `src/theme.ts`.
+
+Trilha: com `"music": "synthwave-104.wav"` no roteiro, `scripts/musica.py` compõe uma synthwave original por código
+(sem direitos de terceiros) do tamanho do vídeo, e ela abaixa sozinha enquanto a narração fala. `"bpm"` e
+`"musicVolume"` (padrão 0.2) ajustam ritmo e volume; outra música vai em `public/music/` com o nome no roteiro.
+`"hold"` numa cena a mantém na tela por mais alguns segundos depois da fala.
+
 Extras: `--quadro 300` renderiza só um quadro (PNG) para conferir o visual; `npm run studio`
-abre o editor do Remotion com pré-visualização. Trilha: `public/music/<arquivo>` + `"music"` no roteiro.
+abre o editor do Remotion com pré-visualização.
 Nome do canal e @: `channel.json`.
 
 ## Roteiro

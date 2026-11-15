@@ -1,6 +1,6 @@
 {
-  "name": "GTA 6 RADAR",
-  "handle": "@seucanal",
+  "name": "CENTRAL GTA VI",
+  "handle": "@CENTRALGTA-s1i",
   "fps": 30,
   "width": 1080,
   "height": 1920,
@@ -16,5 +16,22 @@
       "name": "pm_alex",
       "speed": 1.1
     }
-  }
+  },
+  "socials": [
+    {
+      "platform": "instagram",
+      "label": "Instagram",
+      "handle": "@centrl.gta_vi"
+    },
+    {
+      "platform": "youtube",
+      "label": "YouTube",
+      "handle": "@CENTRALGTA-s1i"
+    },
+    {
+      "platform": "tiktok",
+      "label": "TikTok",
+      "handle": "@central.gta49"
+    }
+  ]
 }

@@ -57,7 +57,7 @@ export const Captions: React.FC<{scenes: SceneData[]}> = ({scenes}) => {
           const active = frame >= w.s && frame < w.e + 1;
           const done = frame >= w.e + 1;
           const bump = spring({frame: frame - w.s, fps, config: {damping: 10, stiffness: 300, mass: 0.4}});
-          const color = active ? (w.hl ? C.pink : C.yellow) : w.hl ? C.pink : C.white;
+          const color = active ? (w.hl ? C.pink : C.accent) : w.hl ? C.pink : C.white;
           return (
             <span
               key={i}
@@ -73,7 +73,7 @@ export const Captions: React.FC<{scenes: SceneData[]}> = ({scenes}) => {
                 transform: `scale(${active ? 1 + 0.12 * bump : 1}) translateY(${active ? -6 * bump : 0}px)`,
                 WebkitTextStroke: '14px #0B0614',
                 paintOrder: 'stroke fill',
-                textShadow: active ? `0 0 34px ${w.hl ? C.pink : C.yellow}88, 0 8px 0 #0B0614` : '0 8px 0 #0B0614',
+                textShadow: active ? `0 0 34px ${w.hl ? C.pink : C.accent}88, 0 8px 0 #0B0614` : '0 8px 0 #0B0614',
               }}
             >
               {w.t.replace(/[.,;:]$/, '')}
