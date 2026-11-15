@@ -9,10 +9,10 @@
         "kicker": "URGENTE",
         "lines": [
           "GTA 6",
-          "EM *6 DIAS*"
+          "EM *4 DIAS*"
         ]
       },
-      "gameplay": "gta6 trailer"
+      "gameplay": "gta6 tiroteio-policia"
     },
     {
       "type": "headline",
@@ -22,7 +22,7 @@
         "title": "LANÇAMENTO: *19 DE NOVEMBRO*",
         "source": "Take-Two, balanço trimestral"
       },
-      "gameplay": "gta6 cidade"
+      "gameplay": "gta6 cidade-avenida"
     },
     {
       "type": "timeline",
@@ -50,7 +50,7 @@
           }
         ]
       },
-      "gameplay": "gta5"
+      "gameplay": "gta6 conversivel-vermelho"
     },
     {
       "type": "stat",
@@ -63,7 +63,7 @@
         "decimals": 2,
         "sub": "preço nos *Estados Unidos*"
       },
-      "gameplay": "gta6 loja"
+      "gameplay": "gta6 terraco-festa"
     },
     {
       "type": "list",
@@ -85,7 +85,7 @@
           }
         ]
       },
-      "gameplay": "gta6 personagens"
+      "gameplay": "gta6 cidade-vista-aerea"
     },
     {
       "type": "compare",
@@ -103,7 +103,7 @@
           "note": "previsão"
         }
       },
-      "gameplay": "gta5 online"
+      "gameplay": "gta6 assalto-loja"
     },
     {
       "type": "cta",
@@ -112,7 +112,7 @@
         "title": "*SEGUE* AÍ",
         "sub": "GTA 6 todo dia até o lançamento"
       },
-      "gameplay": "gta6 trailer"
+      "gameplay": "gta6 pier-pulo-mar"
     }
   ]
 }

@@ -1,7 +1,7 @@
 // Uso: npm run video -- <episodio> [--sem-render] [--quadro N]
 // 1) voz por cena  2) sincronia das legendas  3) gameplay por cena  4) render final
 import {execFileSync, spawnSync} from 'node:child_process';
-import {copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync} from 'node:fs';
+import {copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync} from 'node:fs';
 import path from 'node:path';
 
 const args = process.argv.slice(2);
@@ -35,6 +35,7 @@ const VOICE = channel.voice ?? {};
 const VS_URL = process.env.VOICESTUDIO_URL ?? VOICE.url ?? 'http://127.0.0.1:3900';
 let placeholderVoice = false;
 const voiceUsed = new Set();
+let lastVoiceBy = '';
 
 const vsUp = await fetch(`${VS_URL}/health`, {signal: AbortSignal.timeout(3000)}).then((r) => r.ok, () => false);
 if (VOICE.provider === 'voicestudio' && !vsUp) console.warn(`  VoiceStudio não respondeu em ${VS_URL}; usando a voz reserva.`);
@@ -52,7 +53,17 @@ async function voiceStudioTts(text, out) {
   } else if (VOICE.design) {
     form.set('instruct', VOICE.design);
   }
-  const r = await fetch(`${VS_URL}/generate`, {method: 'POST', body: form});
+  // a primeira fala depois de ligar o servidor carrega o modelo e pode passar do limite de espera: tenta de novo
+  let r;
+  for (let attempt = 1; ; attempt++) {
+    try {
+      r = await fetch(`${VS_URL}/generate`, {method: 'POST', body: form});
+      break;
+    } catch (e) {
+      if (attempt >= 3) throw e;
+      console.warn(`  VoiceStudio ainda carregando o modelo (${e.message}); tentando de novo…`);
+    }
+  }
   if (!r.ok) throw new Error(`VoiceStudio ${r.status}: ${(await r.text()).slice(0, 200)}`);
   writeFileSync(out, Buffer.from(await r.arrayBuffer()));
 }
@@ -64,14 +75,17 @@ async function voiceFor(id, text) {
   if (real) {
     execFileSync('ffmpeg', ['-y', '-loglevel', 'error', '-i', real, '-af', `${trim}loudnorm=I=-15:TP=-1.5`, '-ar', '48000', out]);
     voiceUsed.add('gravação própria');
+    lastVoiceBy = 'gravação';
     return out;
   }
   const tmp = out.replace('.wav', '.raw.wav');
+  lastVoiceBy = 'reserva';
   let ok = false;
   if (VOICE.provider === 'voicestudio' && vsUp) {
     try {
       await voiceStudioTts(text, tmp);
       ok = true;
+      lastVoiceBy = 'voicestudio';
       voiceUsed.add(`VoiceStudio ${VOICE.engine ?? 'voxcpm2'}`);
     } catch (e) {
       console.warn(`  ${id}: ${e.message}; usando a voz reserva.`);
@@ -257,10 +271,24 @@ for (const [i, sc] of episode.scenes.entries()) {
   const id = sc.id ?? `c${String(i + 1).padStart(2, '0')}`;
   const spoken = sc.narration.replace(/\*/g, '');
   narrationSheet.push(`[${id}]  →  para trocar por gravação própria: ${epDir}/voice/${id}.mp3\n${spoken}\n`);
-  process.stdout.write(`  voz ${id}…\r`);
-  const file = await voiceFor(id, spoken);
+  // cache: mesmo texto e mesma voz → reaproveita o áudio e o tempo das palavras
+  const cacheFile = path.join(pubDir, 'voice', `${id}.json`);
+  const key = JSON.stringify({narration: sc.narration, voice: VOICE});
+  const cached = existsSync(cacheFile) && JSON.parse(readFileSync(cacheFile, 'utf8'));
+  let file = path.join(pubDir, 'voice', `${id}.wav`);
+  let words;
+  if (cached && cached.key === key && existsSync(file) && !flag('refazer-voz')) {
+    words = cached.words;
+    voiceUsed.add('cache');
+  } else {
+    process.stdout.write(`  voz ${id}…\r`);
+    file = await voiceFor(id, spoken);
+    words = await timeWords(sc.narration, file, probe(file));
+    // só guarda no cache a voz configurada; uma voz reserva é refeita assim que o VoiceStudio voltar
+    if (lastVoiceBy !== 'reserva' || VOICE.provider !== 'voicestudio') writeFileSync(cacheFile, JSON.stringify({key, words}));
+    else if (existsSync(cacheFile)) rmSync(cacheFile);
+  }
   const total = probe(file);
-  const words = await timeWords(sc.narration, file, total);
   const duration = LEAD + Math.ceil(total * fps) + TAIL;
 
   // cues: cada item de lista/linha do tempo aparece quando a narração fala a palavra-chave
