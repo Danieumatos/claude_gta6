@@ -46,6 +46,8 @@ async function voiceStudioTts(text, out) {
   form.set('text', text);
   form.set('language', 'Portuguese (Brazil)');
   if (VOICE.seed != null) form.set('seed', String(VOICE.seed));
+  // falas longas em trechos menores: evita que o modelo corte o final
+  form.set('max_chunk_chars', String(VOICE.maxChunkChars ?? 160));
   if (VOICE.reference) {
     // clona sempre a mesma referência: o timbre não muda de uma cena para outra
     form.set('ref_audio', new Blob([readFileSync(VOICE.reference)], {type: 'audio/wav'}), path.basename(VOICE.reference));
@@ -269,11 +271,14 @@ const narrationSheet = [];
 const scenes = [];
 for (const [i, sc] of episode.scenes.entries()) {
   const id = sc.id ?? `c${String(i + 1).padStart(2, '0')}`;
-  const spoken = sc.narration.replace(/\*/g, '');
+  // a legenda usa o texto do roteiro; a voz recebe a grafia do dicionário de pronúncia (channel.json)
+  let spoken = sc.narration.replace(/\*/g, '');
+  for (const [word, say] of Object.entries(channel.pronounce ?? {})) spoken = spoken.split(word).join(say);
   narrationSheet.push(`[${id}]  →  para trocar por gravação própria: ${epDir}/voice/${id}.mp3\n${spoken}\n`);
   // cache: mesmo texto e mesma voz → reaproveita o áudio e o tempo das palavras
   const cacheFile = path.join(pubDir, 'voice', `${id}.json`);
-  const key = JSON.stringify({narration: sc.narration, voice: VOICE});
+  const plain = sc.narration.replace(/\*/g, '');
+  const key = JSON.stringify({narration: sc.narration, voice: VOICE, ...(spoken !== plain ? {spoken} : {})});
   const cached = existsSync(cacheFile) && JSON.parse(readFileSync(cacheFile, 'utf8'));
   let file = path.join(pubDir, 'voice', `${id}.wav`);
   let words;
@@ -294,7 +299,7 @@ for (const [i, sc] of episode.scenes.entries()) {
   // cues: cada item de lista/linha do tempo aparece quando a narração fala a palavra-chave
   const props = structuredClone(sc.props ?? {});
   if (sc.type === 'cta' && !props.socials) props.socials = channel.socials ?? [];
-  const cued = props.items ?? props.points;
+  const cued = props.items ?? props.points ?? props.facts;
   if (Array.isArray(cued)) {
     cued.forEach((it, k) => {
       const hit = it.cue && words.find((w) => norm(w.t).startsWith(norm(it.cue)));

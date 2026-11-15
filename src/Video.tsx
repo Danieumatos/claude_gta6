@@ -49,7 +49,7 @@ export const Video: React.FC<{timeline: Timeline}> = ({timeline}) => {
             <Sequence from={3} durationInFrames={20}>
               <Audio src={staticFile(s.type === 'hook' || s.type === 'stat' ? 'sfx/impact.wav' : 'sfx/pop.wav')} volume={0.55} />
             </Sequence>
-            {(s.props.items ?? s.props.points ?? []).map((it: {_at: number}, i: number) => (
+            {(s.props.items ?? s.props.points ?? s.props.facts ?? []).map((it: {_at: number}, i: number) => (
               <Sequence key={i} from={it._at} durationInFrames={15}>
                 <Audio src={staticFile('sfx/pop.wav')} volume={0.4} />
               </Sequence>

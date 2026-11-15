@@ -1,7 +1,7 @@
 import React from 'react';
 import {AbsoluteFill, Img, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {Pop, Rich, clamp, panel, useEase, useExit, usePop} from '../anim';
-import {Emblem, PlatformBadge} from '../Brand';
+import {Emblem, PlatformBadge, Wordmark} from '../Brand';
 import {BODY, C, DISPLAY, GRAD, SAFE} from '../theme';
 
 type P<T = any> = {props: T; duration: number};
@@ -623,6 +623,76 @@ const IconRow: React.FC<P<{tag?: string; title: string; items: {icon: string; la
   );
 };
 
+/* ───────── profile: ficha de personagem ───────── */
+const Profile: React.FC<P<{photo: string; name: string; role?: string; facts: {text: string; _at: number}[]}>> = ({props, duration}) => {
+  const frame = useCurrentFrame();
+  const {fps} = useVideoConfig();
+  const pop = usePop(0, 12, 150);
+  const zoom = 1.04 + frame * 0.0009;
+  const sweep = interpolate(frame, [6, 26], [-40, 140], clamp);
+  return (
+    <Stage duration={duration}>
+      <div style={{width: '100%', textAlign: 'center'}}>
+        <div
+          style={{
+            position: 'relative',
+            width: 430,
+            height: 430,
+            margin: '0 auto',
+            borderRadius: 40,
+            overflow: 'hidden',
+            border: `6px solid ${C.cyan}`,
+            boxShadow: `0 0 0 8px ${C.ink}, 0 0 0 12px ${C.pink}, 0 0 60px ${C.pink}99, 0 30px 80px rgba(0,0,0,0.7)`,
+            transform: `scale(${0.4 + 0.6 * pop}) rotate(${(1 - pop) * 8}deg)`,
+            opacity: Math.min(1, pop * 2),
+          }}
+        >
+          <Img src={staticFile(props.photo)} style={{width: '100%', height: '100%', objectFit: 'cover', transform: `scale(${zoom})`}} />
+          <div style={{position: 'absolute', inset: 0, background: `linear-gradient(110deg, transparent ${sweep - 15}%, rgba(255,255,255,0.35) ${sweep}%, transparent ${sweep + 15}%)`}} />
+          <div style={{position: 'absolute', inset: 0, background: 'linear-gradient(180deg, transparent 60%, rgba(13,8,20,0.55) 100%)'}} />
+        </div>
+        {props.role ? (
+          <Pop delay={8}>
+            <div style={{display: 'inline-block', marginTop: 30, fontFamily: BODY, fontWeight: 900, fontSize: 28, letterSpacing: 6, color: C.ink, background: C.cyan, padding: '8px 22px', borderRadius: 10, boxShadow: `0 0 26px ${C.cyan}aa`}}>
+              {props.role.toUpperCase()}
+            </div>
+          </Pop>
+        ) : null}
+        <Pop delay={10} from="scale">
+          <div style={{marginTop: 18}}>
+            <Wordmark lines={[props.name]} size={104} align="center" />
+          </div>
+        </Pop>
+        <div style={{marginTop: 34, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16}}>
+          {props.facts.map((f, i) => {
+            const p = spring({frame: frame - f._at, fps, config: {damping: 12, stiffness: 210, mass: 0.6}});
+            const fresh = interpolate(frame, [f._at, f._at + fps], [1, 0], clamp);
+            return (
+              <div
+                key={i}
+                style={{
+                  ...panel,
+                  borderRadius: 22,
+                  padding: '14px 28px',
+                  borderColor: `rgba(255,46,143,${0.2 + fresh * 0.8})`,
+                  fontFamily: BODY,
+                  fontWeight: 800,
+                  fontSize: 40,
+                  color: C.white,
+                  opacity: Math.min(1, p * 1.4),
+                  transform: `translateX(${(1 - p) * (i % 2 ? 160 : -160)}px)`,
+                }}
+              >
+                <Rich text={f.text} />
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </Stage>
+  );
+};
+
 export const SCENES: Record<string, React.FC<P>> = {
   hook: Hook,
   headline: Headline,
@@ -635,4 +705,5 @@ export const SCENES: Record<string, React.FC<P>> = {
   cta: Cta,
   icon: IconScene,
   iconrow: IconRow,
+  profile: Profile,
 };

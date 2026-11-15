@@ -1,0 +1,106 @@
+{
+  "title": "GTA 6: a história de Jason e Lucia — o que se sabe e o que se especula",
+  "music": "synthwave-104.wav",
+  "musicVolume": 0.17,
+  "scenes": [
+    {
+      "type": "hook",
+      "narration": "O que já se sabe da história do Jason e da Lucia? E o que os fãs suspeitam que vai acontecer?",
+      "props": {"kicker": "HISTÓRIA", "lines": ["JASON", "& *LUCIA*"], "note": "Fatos da Rockstar e teorias de fãs, separados."},
+      "gameplay": "gta6 jason-lucia"
+    },
+    {
+      "type": "headline",
+      "narration": "A premissa oficial: os dois sempre souberam que o jogo estava contra eles. Até que um golpe *fácil* dá *errado*, e eles caem no meio de uma conspiração criminosa que se espalha por todo o estado de Leonida. Pra sair vivos, vão ter que confiar um no outro.",
+      "props": {"tag": "OFICIAL", "title": "UM GOLPE FÁCIL QUE *DEU ERRADO*", "source": "Rockstar Games"},
+      "gameplay": "gta6 mascara-bandana"
+    },
+    {
+      "type": "profile",
+      "narration": "Começando pelo *Jason* *Duval*. Ele cresceu cercado de golpistas e bandidos. Tentou mudar de vida no Exército, mas acabou nas Keys, fazendo o que sabe de melhor: trabalhando pra traficantes locais.",
+      "props": {
+        "photo": "personagens/jason.jpg",
+        "name": "JASON DUVAL",
+        "role": "Protagonista",
+        "facts": [
+          {"text": "Cresceu entre *golpistas* e bandidos", "cue": "cresceu"},
+          {"text": "Passou pelo *Exército*", "cue": "exército"},
+          {"text": "Trabalha pra *traficantes* nas Keys", "cue": "trabalhando"}
+        ]
+      },
+      "gameplay": "gta6 barco-pantano"
+    },
+    {
+      "type": "quote",
+      "narration": "Hoje ele mora de graça num imóvel do Brian, um traficante veterano, desde que ajude nas cobranças da região. O Jason só quer uma vida fácil, mas tudo fica mais difícil. E, segundo a própria Rockstar, conhecer a Lucia pode ser a melhor ou a pior coisa que já aconteceu com ele.",
+      "props": {"text": "Conhecer a Lucia pode ser a *melhor* ou a *pior* coisa que já aconteceu com ele.", "author": "Rockstar Games, sobre o Jason"},
+      "gameplay": "gta6 cidade-avenida"
+    },
+    {
+      "type": "headline",
+      "narration": "Agora, as teorias. A mais comentada diz que um dos protagonistas *morre* no final, e muita gente aposta no Jason. Tem até quem acredite que ele seria um policial infiltrado. Mas nada disso foi confirmado.",
+      "props": {"tag": "RUMOR", "title": "O JASON *MORRE* NO FINAL?", "source": "teoria de fãs, não confirmada"},
+      "gameplay": "gta6 tiroteio-rua"
+    },
+    {
+      "type": "profile",
+      "narration": "Agora, a *Lucia* *Caminos*. O pai ensinou ela a lutar assim que aprendeu a andar. Lutar pela família levou ela pra Penitenciária de Leonida, e só a sorte tirou ela de lá.",
+      "props": {
+        "photo": "personagens/lucia.jpg",
+        "name": "LUCIA CAMINOS",
+        "role": "Protagonista",
+        "facts": [
+          {"text": "Aprendeu a *lutar* com o pai", "cue": "pai"},
+          {"text": "Foi *presa* lutando pela família", "cue": "família"},
+          {"text": "Saiu da prisão por *sorte*", "cue": "sorte"}
+        ]
+      },
+      "gameplay": "gta6 lucia-dirigindo"
+    },
+    {
+      "type": "headline",
+      "narration": "Mais do que tudo, ela quer a vida boa que a mãe sempre sonhou, desde os tempos em *Liberty* *City*. Mas, em vez de fantasia, a Lucia vai resolver com as próprias mãos. Recém-saída da prisão, ela vai seguir o plano, custe o que custar.",
+      "props": {"tag": "OFICIAL", "title": "DE *LIBERTY CITY* A VICE CITY", "source": "Rockstar Games"},
+      "gameplay": "gta6 cidade-vista-aerea"
+    },
+    {
+      "type": "headline",
+      "narration": "E a teoria mais famosa sobre ela: a Lucia teria saído da prisão como *informante*, e trairia o Jason no final. Outros apostam num final estilo Bonnie e Clyde, com os dois caindo juntos. De novo: tudo especulação.",
+      "props": {"tag": "RUMOR", "title": "A LUCIA VAI *TRAIR* O JASON?", "source": "teoria de fãs, não confirmada"},
+      "gameplay": "gta6 perseguicao-policia"
+    },
+    {
+      "type": "list",
+      "narration": "Rapidinho, o resto do elenco. O Cal Hampton é o amigo paranoico do Jason, que passa o dia espionando o rádio da Guarda Costeira. O Brian Heder é um traficante das antigas, que toca o negócio no estaleiro com a terceira esposa, a Lori. E o Raul Bautista é um ladrão de bancos experiente, sempre atrás de talentos, mas cada vez mais imprudente.",
+      "props": {
+        "title": "OS *PARCEIROS*",
+        "items": [
+          {"text": "*Cal Hampton*: o amigo paranoico do Jason", "cue": "cal"},
+          {"text": "*Brian Heder*: traficante veterano das Keys", "cue": "brian"},
+          {"text": "*Raul Bautista*: ladrão de bancos imprudente", "cue": "raul"}
+        ]
+      },
+      "gameplay": "gta6 terraco-festa"
+    },
+    {
+      "type": "list",
+      "narration": "Na cena de Vice City, tem o Boobie Ike, uma lenda local que transformou o crime num império de imóveis, clube de strip e estúdio. O sócio dele na gravadora Only Raw é o Dre'Quan Priest, que acabou de contratar as Real Dimez, a dupla Bae-Luxe e Roxy.",
+      "props": {
+        "title": "A CENA DE *VICE CITY*",
+        "items": [
+          {"text": "*Boobie Ike*: lenda local e empresário", "cue": "boobie"},
+          {"text": "*Dre'Quan Priest*: dono da Only Raw Records", "cue": "dre"},
+          {"text": "*Real Dimez*: a dupla Bae-Luxe e Roxy", "cue": "real"}
+        ]
+      },
+      "gameplay": "gta6 boate-neon"
+    },
+    {
+      "type": "cta",
+      "narration": "Qual teoria você acha que vai se confirmar? Comenta aí, e me segue pra mais de GTA 6.",
+      "props": {"title": "*SEGUE* AÍ", "sub": "Tudo de GTA 6 por aqui"},
+      "hold": 2.5,
+      "gameplay": "gta6 pier-pulo-mar"
+    }
+  ]
+}
