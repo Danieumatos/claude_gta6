@@ -1,0 +1,35 @@
+[c01]  →  para trocar por gravação própria: episodes/002-icones-do-hud/voice/c01.mp3
+Você sabe o que significa cada ícone do HUD do GTA 6? Bora entender os que a Rockstar já mostrou.
+
+[c02]  →  para trocar por gravação própria: episodes/002-icones-do-hud/voice/c02.mp3
+Começando pelas barras. A de capacidade pulmonar esvazia quando você nada debaixo d'água sem cilindro. Já a do tanque de oxigênio mostra quanto ar ainda resta. Se qualquer uma zerar, você provavelmente começa a perder vida.
+
+[c03]  →  para trocar por gravação própria: episodes/002-icones-do-hud/voice/c03.mp3
+Esse aqui é o BankMe. O número do lado mostra o seu dinheiro no banco, e ele fica seguro: você não perde quando morre ou é preso. O círculo roxo pode ser o progresso de um objetivo da história, ou um limite, já que Jason e Lucia são foragidos, e muito dinheiro na conta levantaria suspeita.
+
+[c04]  →  para trocar por gravação própria: episodes/002-icones-do-hud/voice/c04.mp3
+Agora, o Perfil Criminal. Ele pode ser positivo, neutro ou negativo. Boas ações, ser amigável e incapacitar em vez de matar deixam o perfil positivo. Fazer rampage e matar puxam pro negativo. E ainda não se sabe se esse nível muda algo no gameplay ou na história.
+
+[c05]  →  para trocar por gravação própria: episodes/002-icones-do-hud/voice/c05.mp3
+Na mira, aparecem três marcadores de acerto. O básico, quando o tiro não incapacita nem mata. O incapacitante, que conta a favor do seu Perfil Criminal. E o fatal, em vermelho, que conta contra.
+
+[c06]  →  para trocar por gravação própria: episodes/002-icones-do-hud/voice/c06.mp3
+E agora, a parte mais importante: os marcadores da polícia. São cinco, e cada um mostra uma pista que eles têm sobre você.
+
+[c07]  →  para trocar por gravação própria: episodes/002-icones-do-hud/voice/c07.mp3
+O de CFTV significa que existe gravação de câmera de você cometendo o crime. Dá pra destruir ou apagar as imagens pra tirar esse marcador.
+
+[c08]  →  para trocar por gravação própria: episodes/002-icones-do-hud/voice/c08.mp3
+O de roupa: a polícia identificou o que você está vestindo. Troque de roupa longe da vista deles.
+
+[c09]  →  para trocar por gravação própria: episodes/002-icones-do-hud/voice/c09.mp3
+O de grupo aparece quando você está em dupla ou em grupo. É só se separar, fora da vista da polícia.
+
+[c10]  →  para trocar por gravação própria: episodes/002-icones-do-hud/voice/c10.mp3
+O de veículo: a polícia identificou o carro em que você está. Saia dele. Mas atenção: entrar em outro carro ainda na vista da polícia ativa o marcador de novo.
+
+[c11]  →  para trocar por gravação própria: episodes/002-icones-do-hud/voice/c11.mp3
+E o de aparência: a polícia conhece o seu visual. Coloque ou tire máscara e óculos, ou mude o penteado, sempre fora da vista deles.
+
+[c12]  →  para trocar por gravação própria: episodes/002-icones-do-hud/voice/c12.mp3
+Salva esse vídeo pra consultar no lançamento, e me segue pra mais guias de GTA 6.

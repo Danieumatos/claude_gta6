@@ -1,0 +1,106 @@
+{
+  "title": "GTA 6: o que significa cada ícone do HUD",
+  "music": "synthwave-104.wav",
+  "musicVolume": 0.18,
+  "scenes": [
+    {
+      "type": "hook",
+      "narration": "Você sabe o que significa cada *ícone* do HUD do GTA 6? Bora entender os que a Rockstar já mostrou.",
+      "props": {"kicker": "GUIA", "lines": ["OS ÍCONES", "DO *HUD*"], "note": "Com base no que a Rockstar mostrou até agora."},
+      "gameplay": "gta6 tiroteio-policia"
+    },
+    {
+      "type": "icon",
+      "narration": "Começando pelas barras. A de capacidade *pulmonar* esvazia quando você nada debaixo d'água sem cilindro. Já a do tanque de *oxigênio* mostra quanto ar ainda resta. Se qualquer uma zerar, você provavelmente começa a perder vida.",
+      "props": {"tag": "GUIA · BARRAS", "icon": "pulmao-oxigenio", "title": "PULMÃO E *OXIGÊNIO*", "tip": "Zerou? Provavelmente você perde vida."},
+      "gameplay": "gta6 mergulho-mar"
+    },
+    {
+      "type": "icon",
+      "narration": "Esse aqui é o *BankMe*. O número do lado mostra o seu dinheiro no banco, e ele fica seguro: você não perde quando morre ou é preso. O círculo roxo pode ser o progresso de um objetivo da história, ou um limite, já que Jason e Lucia são foragidos, e muito dinheiro na conta levantaria suspeita.",
+      "props": {"tag": "GUIA · BARRAS", "icon": "bankme", "title": "*BANKME*", "tip": "Dinheiro no banco não se perde em Wasted ou Busted."},
+      "gameplay": "gta6 terraco-festa"
+    },
+    {
+      "type": "iconrow",
+      "narration": "Agora, o *Perfil* *Criminal*. Ele pode ser positivo, neutro ou negativo. Boas ações, ser amigável e incapacitar em vez de matar deixam o perfil positivo. Fazer rampage e matar puxam pro negativo. E ainda não se sabe se esse nível muda algo no gameplay ou na história.",
+      "props": {
+        "tag": "GUIA · PERFIL",
+        "title": "PERFIL *CRIMINAL*",
+        "items": [
+          {"icon": "perfil-positivo", "label": "POSITIVO", "color": "green", "cue": "positivo"},
+          {"icon": "perfil-neutro", "label": "NEUTRO", "color": "white", "cue": "neutro"},
+          {"icon": "perfil-negativo", "label": "NEGATIVO", "color": "red", "cue": "negativo"}
+        ]
+      },
+      "gameplay": "gta6 assalto-loja"
+    },
+    {
+      "type": "iconrow",
+      "narration": "Na mira, aparecem três marcadores de acerto. O básico, quando o tiro não incapacita nem mata. O incapacitante, que conta a favor do seu Perfil Criminal. E o fatal, em vermelho, que conta contra.",
+      "props": {
+        "tag": "GUIA · MIRA",
+        "title": "MARCADORES DE *ACERTO*",
+        "items": [
+          {"icon": "acerto-basico", "label": "BÁSICO", "color": "white", "cue": "básico"},
+          {"icon": "acerto-incapacitante", "label": "INCAPACITANTE", "color": "green", "cue": "incapacitante"},
+          {"icon": "acerto-fatal", "label": "FATAL", "color": "red", "cue": "fatal"}
+        ]
+      },
+      "gameplay": "gta6 tiroteio-rua"
+    },
+    {
+      "type": "iconrow",
+      "narration": "E agora, a parte mais importante: os marcadores da *polícia*. São cinco, e cada um mostra uma pista que eles têm sobre você.",
+      "props": {
+        "tag": "GUIA · POLÍCIA",
+        "title": "MARCADORES DA *POLÍCIA*",
+        "items": [
+          {"icon": "policia-cftv", "label": "CFTV"},
+          {"icon": "policia-roupa", "label": "ROUPA"},
+          {"icon": "policia-grupo", "label": "GRUPO"},
+          {"icon": "policia-veiculo", "label": "VEÍCULO"},
+          {"icon": "policia-aparencia", "label": "APARÊNCIA"}
+        ]
+      },
+      "gameplay": "gta6 perseguicao-policia"
+    },
+    {
+      "type": "icon",
+      "narration": "O de *CFTV* significa que existe gravação de câmera de você cometendo o crime. Dá pra destruir ou apagar as imagens pra tirar esse marcador.",
+      "props": {"tag": "GUIA · POLÍCIA", "icon": "policia-cftv", "title": "MARCADOR DE *CFTV*", "tip": "Para remover: destrua ou apague as gravações."},
+      "gameplay": "gta6 loja-cameras"
+    },
+    {
+      "type": "icon",
+      "narration": "O de *roupa*: a polícia identificou o que você está vestindo. Troque de roupa longe da vista deles.",
+      "props": {"tag": "GUIA · POLÍCIA", "icon": "policia-roupa", "title": "MARCADOR DE *ROUPA*", "tip": "Para remover: troque de roupa fora da vista da polícia."},
+      "gameplay": "gta6 rua-pedestres"
+    },
+    {
+      "type": "icon",
+      "narration": "O de *grupo* aparece quando você está em dupla ou em grupo. É só se separar, fora da vista da polícia.",
+      "props": {"tag": "GUIA · POLÍCIA", "icon": "policia-grupo", "title": "MARCADOR DE *GRUPO*", "tip": "Para remover: separe-se fora da vista da polícia."},
+      "gameplay": "gta6 jason-lucia"
+    },
+    {
+      "type": "icon",
+      "narration": "O de *veículo*: a polícia identificou o carro em que você está. Saia dele. Mas atenção: entrar em outro carro ainda na vista da polícia ativa o marcador de novo.",
+      "props": {"tag": "GUIA · POLÍCIA", "icon": "policia-veiculo", "title": "MARCADOR DE *VEÍCULO*", "tip": "Para remover: saia do carro. Trocar na frente deles não adianta."},
+      "gameplay": "gta6 carro-em-chamas"
+    },
+    {
+      "type": "icon",
+      "narration": "E o de *aparência*: a polícia conhece o seu visual. Coloque ou tire máscara e óculos, ou mude o penteado, sempre fora da vista deles.",
+      "props": {"tag": "GUIA · POLÍCIA", "icon": "policia-aparencia", "title": "MARCADOR DE *APARÊNCIA*", "tip": "Para remover: máscara, óculos ou penteado, longe da polícia."},
+      "gameplay": "gta6 mascara-bandana"
+    },
+    {
+      "type": "cta",
+      "narration": "Salva esse vídeo pra consultar no lançamento, e me segue pra mais guias de GTA 6.",
+      "props": {"title": "*SEGUE* AÍ", "sub": "Guias de GTA 6 todo dia"},
+      "hold": 2.5,
+      "gameplay": "gta6 pier-pulo-mar"
+    }
+  ]
+}

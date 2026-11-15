@@ -1,5 +1,5 @@
 import React from 'react';
-import {AbsoluteFill, Img, interpolate, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
+import {AbsoluteFill, Img, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {Pop, Rich, clamp, panel, useEase, useExit, usePop} from '../anim';
 import {Emblem, PlatformBadge} from '../Brand';
 import {BODY, C, DISPLAY, GRAD, SAFE} from '../theme';
@@ -74,7 +74,7 @@ const title = (size: number): React.CSSProperties => ({
 });
 
 /* ───────── hook: abertura de impacto ───────── */
-const Hook: React.FC<P<{kicker?: string; lines: string[]}>> = ({props, duration}) => {
+const Hook: React.FC<P<{kicker?: string; lines: string[]; note?: string}>> = ({props, duration}) => {
   const frame = useCurrentFrame();
   const shake = Math.max(0, 1 - frame / 10) * 14;
   return (
@@ -96,6 +96,7 @@ const Hook: React.FC<P<{kicker?: string; lines: string[]}>> = ({props, duration}
           );
         })}
         <Underline delay={10 + props.lines.length * 5} />
+        {props.note ? <Footnote text={props.note} /> : null}
       </div>
     </Stage>
   );
@@ -499,6 +500,129 @@ const Cta: React.FC<P<{title: string; sub?: string; socials?: Social[]}>> = ({pr
   );
 };
 
+/* ───────── icon: um ícone do HUD explicado ───────── */
+const Footnote: React.FC<{text?: string}> = ({text = 'Com base no que a Rockstar mostrou até agora. Pode mudar no lançamento.'}) => (
+  <div style={{fontFamily: BODY, fontWeight: 700, fontSize: 24, color: 'rgba(255,255,255,0.62)', textAlign: 'center', marginTop: 22, textShadow: '0 2px 8px rgba(0,0,0,0.9)'}}>
+    {text}
+  </div>
+);
+
+const TagPill: React.FC<{text: string}> = ({text}) => (
+  <Pop from="left" dist={160}>
+    <div
+      style={{
+        display: 'inline-block',
+        fontFamily: BODY,
+        fontWeight: 900,
+        fontSize: 30,
+        letterSpacing: 5,
+        color: C.ink,
+        background: C.pink,
+        padding: '10px 22px',
+        borderRadius: 10,
+        boxShadow: `0 0 30px ${C.pink}aa`,
+      }}
+    >
+      {text}
+    </div>
+  </Pop>
+);
+
+const IconScene: React.FC<P<{tag?: string; icon: string; title: string; tip?: string}>> = ({props, duration}) => {
+  const frame = useCurrentFrame();
+  const pop = usePop(2, 9, 160);
+  const float = Math.sin(frame / 14) * 8;
+  const ring = interpolate(frame % 45, [0, 45], [0, 1]);
+  return (
+    <Stage duration={duration}>
+      <div style={{width: '100%', textAlign: 'center'}}>
+        {props.tag ? <TagPill text={props.tag} /> : null}
+        <div style={{position: 'relative', width: 480, height: 480, margin: '26px auto 4px'}}>
+          <div style={{position: 'absolute', inset: 30, borderRadius: '50%', background: `radial-gradient(circle, ${C.pink}55 0%, ${C.purple}33 45%, transparent 70%)`, transform: `scale(${pop})`}} />
+          <div style={{position: 'absolute', inset: 40, borderRadius: '50%', border: `4px solid ${C.cyan}`, opacity: (1 - ring) * 0.7 * pop, transform: `scale(${1 + ring * 0.35})`}} />
+          <Img
+            src={staticFile(`icons/${props.icon}.png`)}
+            style={{
+              position: 'absolute',
+              left: '50%',
+              top: '50%',
+              width: 410,
+              height: 410,
+              objectFit: 'contain',
+              transform: `translate(-50%, calc(-50% + ${float}px)) scale(${0.3 + 0.7 * pop}) rotate(${(1 - pop) * -30}deg)`,
+              filter: `drop-shadow(0 0 26px ${C.cyan}88) drop-shadow(0 16px 30px rgba(0,0,0,0.7))`,
+            }}
+          />
+        </div>
+        <Pop delay={8}>
+          <div style={title(96)}>
+            <Rich text={props.title} />
+          </div>
+        </Pop>
+        {props.tip ? (
+          <Pop delay={16}>
+            <div style={{...panel, display: 'inline-block', marginTop: 26, padding: '20px 32px', borderColor: `${C.cyan}77`, fontFamily: BODY, fontWeight: 800, fontSize: 38, lineHeight: 1.2, color: C.white, maxWidth: 900}}>
+              <Rich text={props.tip} />
+            </div>
+          </Pop>
+        ) : null}
+        <Footnote />
+      </div>
+    </Stage>
+  );
+};
+
+/* ───────── iconrow: vários ícones lado a lado, acendendo conforme a fala ───────── */
+const LABEL_COLORS: Record<string, string> = {green: C.green, red: C.red, white: C.white};
+
+const IconRow: React.FC<P<{tag?: string; title: string; items: {icon: string; label: string; color?: string; _at: number}[]}>> = ({props, duration}) => {
+  const frame = useCurrentFrame();
+  const {fps} = useVideoConfig();
+  const n = props.items.length;
+  const size = n > 3 ? 230 : 280;
+  const active = props.items.reduce((acc, it, i) => (frame >= it._at ? i : acc), -1);
+  return (
+    <Stage duration={duration}>
+      <div style={{width: '100%', textAlign: 'center'}}>
+        {props.tag ? <TagPill text={props.tag} /> : null}
+        <Pop delay={3}>
+          <div style={{...title(104), marginTop: 26}}>
+            <Rich text={props.title} />
+          </div>
+        </Pop>
+        <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '30px 26px', marginTop: 50}}>
+          {props.items.map((it, i) => {
+            const p = spring({frame: frame - it._at, fps, config: {damping: 11, stiffness: 200, mass: 0.6}});
+            const lit = i === active;
+            const color = LABEL_COLORS[it.color ?? ''] ?? C.cyan;
+            return (
+              <div key={i} style={{width: size + 20, opacity: Math.min(1, p * 1.5) * (lit || active < 0 ? 1 : 0.55), transform: `translateY(${(1 - p) * 80}px) scale(${(0.6 + 0.4 * p) * (lit ? 1.08 : 1)})`}}>
+                <div
+                  style={{
+                    ...panel,
+                    width: size,
+                    height: size,
+                    margin: '0 auto',
+                    borderRadius: 34,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderColor: lit ? color : 'rgba(255,255,255,0.14)',
+                    boxShadow: lit ? `0 0 46px ${color}aa, 0 30px 80px rgba(0,0,0,0.55)` : panel.boxShadow,
+                  }}
+                >
+                  <Img src={staticFile(`icons/${it.icon}.png`)} style={{width: size * 0.78, height: size * 0.78, objectFit: 'contain'}} />
+                </div>
+                <div style={{fontFamily: DISPLAY, fontSize: n > 3 ? 40 : 50, color, marginTop: 14, letterSpacing: 1, textShadow: '0 4px 14px rgba(0,0,0,0.9)'}}>{it.label}</div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </Stage>
+  );
+};
+
 export const SCENES: Record<string, React.FC<P>> = {
   hook: Hook,
   headline: Headline,
@@ -509,4 +633,6 @@ export const SCENES: Record<string, React.FC<P>> = {
   quote: Quote,
   image: ImageScene,
   cta: Cta,
+  icon: IconScene,
+  iconrow: IconRow,
 };

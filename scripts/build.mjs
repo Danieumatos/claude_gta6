@@ -355,6 +355,10 @@ if (flag('sem-render')) process.exit(0);
 
 /* ── 4. render ──────────────────────────────────────────────────────── */
 mkdirSync('out', {recursive: true});
+// título, descrição e hashtags para postar, ao lado do vídeo
+const pub = path.join(epDir, 'publicacao.md');
+if (existsSync(pub)) copyFileSync(pub, `out/${slug}-publicacao.md`);
+else console.warn(`  falta ${pub} (título e descrição para postar)`);
 const browser =
   process.env.REMOTION_BROWSER ??
   ['/opt/pw-browsers/chromium_headless_shell-1243/chrome-headless-shell-linux64/chrome-headless-shell'].find(existsSync);

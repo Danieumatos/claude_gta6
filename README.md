@@ -25,6 +25,8 @@ npm run video -- 001-semana-de-lancamento     # gera out/001-semana-de-lancament
    `"gameplay": "gta6 cidade"` escolhe um clipe cujo caminho contenha essas palavras; sem
    correspondência, usa qualquer clipe do mesmo jogo. Trechos não se repetem enquanto houver material.
 4. **Render** — `npm run video -- <episodio>`.
+5. **Postagem** — título, descrição e hashtags ficam em `episodes/<episodio>/publicacao.md` e saem ao lado do
+   vídeo como `out/<episodio>-publicacao.md`.
 
 Identidade do canal: nome, @ e redes em `channel.json` (as redes aparecem com logo e card na cena `cta`); o
 emblema fica em `public/brand/emblema.png`; cores em `src/theme.ts`.
