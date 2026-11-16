@@ -40,14 +40,14 @@ let lastVoiceBy = '';
 const vsUp = await fetch(`${VS_URL}/health`, {signal: AbortSignal.timeout(3000)}).then((r) => r.ok, () => false);
 if (VOICE.provider === 'voicestudio' && !vsUp) console.warn(`  VoiceStudio não respondeu em ${VS_URL}; usando a voz reserva.`);
 
-async function voiceStudioTts(text, out) {
+async function voiceStudioTts(text, out, seed) {
   const form = new FormData();
   form.set('engine', VOICE.engine ?? 'voxcpm2');
   form.set('text', text);
   form.set('language', 'Portuguese (Brazil)');
-  if (VOICE.seed != null) form.set('seed', String(VOICE.seed));
-  // falas longas em trechos menores: evita que o modelo corte o final
-  form.set('max_chunk_chars', String(VOICE.maxChunkChars ?? 160));
+  if ((seed ?? VOICE.seed) != null) form.set('seed', String(seed ?? VOICE.seed));
+  // só falas bem longas são divididas (corte no final); dividir nas vírgulas gera tropeços na fala
+  form.set('max_chunk_chars', String(VOICE.maxChunkChars ?? 280));
   if (VOICE.reference) {
     // clona sempre a mesma referência: o timbre não muda de uma cena para outra
     form.set('ref_audio', new Blob([readFileSync(VOICE.reference)], {type: 'audio/wav'}), path.basename(VOICE.reference));
@@ -70,7 +70,7 @@ async function voiceStudioTts(text, out) {
   writeFileSync(out, Buffer.from(await r.arrayBuffer()));
 }
 
-async function voiceFor(id, text) {
+async function voiceFor(id, text, seed) {
   const real = AUDIO_EXT.map((e) => path.join(epDir, 'voice', id + e)).find(existsSync);
   const out = path.join(pubDir, 'voice', `${id}.wav`);
   const trim = 'silenceremove=start_periods=1:start_threshold=-45dB,areverse,silenceremove=start_periods=1:start_threshold=-45dB,areverse,';
@@ -85,7 +85,7 @@ async function voiceFor(id, text) {
   let ok = false;
   if (VOICE.provider === 'voicestudio' && vsUp) {
     try {
-      await voiceStudioTts(text, tmp);
+      await voiceStudioTts(text, tmp, seed);
       ok = true;
       lastVoiceBy = 'voicestudio';
       voiceUsed.add(`VoiceStudio ${VOICE.engine ?? 'voxcpm2'}`);
@@ -278,7 +278,7 @@ for (const [i, sc] of episode.scenes.entries()) {
   // cache: mesmo texto e mesma voz → reaproveita o áudio e o tempo das palavras
   const cacheFile = path.join(pubDir, 'voice', `${id}.json`);
   const plain = sc.narration.replace(/\*/g, '');
-  const key = JSON.stringify({narration: sc.narration, voice: VOICE, ...(spoken !== plain ? {spoken} : {})});
+  const key = JSON.stringify({narration: sc.narration, voice: VOICE, ...(spoken !== plain ? {spoken} : {}), ...(sc.seed != null ? {seed: sc.seed} : {})});
   const cached = existsSync(cacheFile) && JSON.parse(readFileSync(cacheFile, 'utf8'));
   let file = path.join(pubDir, 'voice', `${id}.wav`);
   let words;
@@ -287,7 +287,7 @@ for (const [i, sc] of episode.scenes.entries()) {
     voiceUsed.add('cache');
   } else {
     process.stdout.write(`  voz ${id}…\r`);
-    file = await voiceFor(id, spoken);
+    file = await voiceFor(id, spoken, sc.seed);
     words = await timeWords(sc.narration, file, probe(file));
     // só guarda no cache a voz configurada; uma voz reserva é refeita assim que o VoiceStudio voltar
     if (lastVoiceBy !== 'reserva' || VOICE.provider !== 'voicestudio') writeFileSync(cacheFile, JSON.stringify({key, words}));

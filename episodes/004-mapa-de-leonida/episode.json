@@ -1,0 +1,193 @@
+{
+  "title": "GTA 6: o tamanho do mapa e as regiões de Leonida",
+  "music": "synthwave-104.wav",
+  "musicVolume": 0.17,
+  "scenes": [
+    {
+      "type": "hook",
+      "narration": "O mapa do GTA 6 é o maior que a Rockstar já fez num GTA. Mas quão grande ele é de verdade?",
+      "props": {
+        "kicker": "MAPA",
+        "lines": [
+          "O MAPA",
+          "DO *GTA 6*"
+        ]
+      },
+      "gameplay": "gta6 cidade-noite-aerea"
+    },
+    {
+      "type": "bars",
+      "narration": "Primeiro, uma comparação. O mapa do GTA 3 tinha uns oito quilômetros quadrados. O de Vice City, nove. O GTA 4, dezesseis. San Andreas, trinta e oito. E o GTA 5 chegou a quase setenta e seis.",
+      "props": {
+        "title": "O TAMANHO DOS *MAPAS*",
+        "unit": "km²",
+        "note": "Medições feitas pela comunidade.",
+        "items": [
+          {
+            "label": "GTA III",
+            "value": 8.12,
+            "cue": "gta"
+          },
+          {
+            "label": "Vice City",
+            "value": 9.11,
+            "cue": "vice"
+          },
+          {
+            "label": "GTA IV",
+            "value": 16.14,
+            "cue": "dezesseis"
+          },
+          {
+            "label": "San Andreas",
+            "value": 38.2,
+            "cue": "san"
+          },
+          {
+            "label": "GTA V",
+            "value": 75.84,
+            "cue": "setenta"
+          }
+        ]
+      },
+      "gameplay": "gta6 cidade-vista-aerea"
+    },
+    {
+      "type": "bars",
+      "narration": "E o GTA 6? A Rockstar contou à imprensa que Leonida tem mais ou menos o *dobro* do tamanho do GTA 5. Se for o dobro mesmo, dá perto de cento e cinquenta quilômetros quadrados. Mas a Rockstar não divulgou o número exato.",
+      "props": {
+        "title": "E O *GTA 6*?",
+        "unit": "km²",
+        "note": "GTA 6: estimativa a partir do “dobro do GTA 5”. Sem número oficial.",
+        "items": [
+          {
+            "label": "GTA V",
+            "value": 75.84,
+            "cue": "gta"
+          },
+          {
+            "label": "GTA 6",
+            "value": 151.7,
+            "approx": true,
+            "highlight": true,
+            "cue": "dobro"
+          }
+        ]
+      },
+      "gameplay": "gta6 praia-aviao"
+    },
+    {
+      "type": "list",
+      "narration": "E tem mais comparações. Segundo o New York Times, o mapa tem cerca de *três* *vezes* a área jogável de Red Dead Redemption 2. Só Vice City já tem o dobro do tamanho de Los Santos. E, somando os subúrbios, a região de Vice City fica onze vezes maior que Los Santos e arredores.",
+      "props": {
+        "title": "OUTRAS *COMPARAÇÕES*",
+        "items": [
+          {
+            "text": "*3x* a área jogável de Red Dead 2",
+            "icon": "3x",
+            "cue": "três"
+          },
+          {
+            "text": "Vice City: *2x* Los Santos",
+            "icon": "2x",
+            "cue": "só"
+          },
+          {
+            "text": "Com os subúrbios: *11x* maior",
+            "icon": "11x",
+            "cue": "onze"
+          }
+        ]
+      },
+      "gameplay": "gta6 cidade-avenida"
+    },
+    {
+      "type": "headline",
+      "narration": "Outra novidade: segundo o YouTuber TGG, que viu a apresentação da Rockstar, o jogo tem *centenas* de interiores pra entrar. No GTA 5, além das casas e de algumas lojas, quase nenhum prédio abria as portas.",
+      "props": {
+        "tag": "CURIOSIDADE",
+        "title": "*CENTENAS* DE INTERIORES",
+        "source": "TGG, após a prévia da Rockstar"
+      },
+      "gameplay": "gta6 boate-neon"
+    },
+    {
+      "type": "headline",
+      "narration": "Agora, as regiões de Leonida, o estado inspirado na Flórida. A estrela é *Vice* *City*, a versão de Miami: hotéis art déco em Ocean Beach, as padarias de Little Cuba e o porto, que a Rockstar chama de capital mundial dos cruzeiros.",
+      "props": {
+        "tag": "REGIÃO",
+        "title": "*VICE CITY*",
+        "source": "inspirada em Miami",
+        "sourceLabel": ""
+      },
+      "gameplay": "gta6 vice-city-praia",
+      "seed": 22
+    },
+    {
+      "type": "headline",
+      "narration": "As *Leonida* *Keys* são inspiradas nas Florida Keys: um arquipélago tropical de vida tranquila, mas na porta de algumas das águas mais bonitas, e mais perigosas, do país.",
+      "props": {
+        "tag": "REGIÃO",
+        "title": "*LEONIDA KEYS*",
+        "source": "inspirada nas Florida Keys",
+        "sourceLabel": ""
+      },
+      "gameplay": "gta6 keys-marina",
+      "seed": 22
+    },
+    {
+      "type": "headline",
+      "narration": "Os *Grassrivers* são a versão do jogo para os Everglades: pântanos, aerobarcos e jacaré pra todo lado.",
+      "props": {
+        "tag": "REGIÃO",
+        "title": "*GRASSRIVERS*",
+        "source": "inspirada nos Everglades",
+        "sourceLabel": ""
+      },
+      "gameplay": "gta6 barco-pantano"
+    },
+    {
+      "type": "headline",
+      "narration": "*Ambrosia* fica no interior, na região do açúcar. A refinaria dá os empregos, e a gangue de motoqueiros local cuida de quase todo o resto.",
+      "props": {
+        "tag": "REGIÃO",
+        "title": "*AMBROSIA*",
+        "source": "inspirada no cinturão do açúcar da Flórida",
+        "sourceLabel": ""
+      },
+      "gameplay": "gta6 motoqueiros"
+    },
+    {
+      "type": "headline",
+      "narration": "Já *Port* *Gellhorn* é uma cidade litorânea de motéis de beira de estrada, cabarés e negócios suspeitos na madrugada.",
+      "props": {
+        "tag": "REGIÃO",
+        "title": "*PORT GELLHORN*",
+        "source": "cidade litorânea de Leonida",
+        "sourceLabel": ""
+      },
+      "gameplay": "gta6 noite-rua-neon"
+    },
+    {
+      "type": "headline",
+      "narration": "E o *Mount* *Kalaga*, um parque nacional na fronteira norte, com caça, pesca e trilhas off-road. Segundo a Rockstar, ali vivem místicos e radicais paranoicos, longe dos olhos do governo.",
+      "props": {
+        "tag": "REGIÃO",
+        "title": "*MOUNT KALAGA*",
+        "source": "parque nacional no norte de Leonida",
+        "sourceLabel": ""
+      },
+      "gameplay": "gta6 kalaga-mata"
+    },
+    {
+      "type": "cta",
+      "narration": "Qual região você vai explorar primeiro? Comenta aí, e me segue pra mais de GTA 6.",
+      "props": {
+        "title": "*SEGUE* AÍ",
+        "sub": "Tudo de GTA 6 por aqui"
+      },
+      "hold": 2.5,
+      "gameplay": "gta6 pier-pulo-mar"
+    }
+  ]
+}

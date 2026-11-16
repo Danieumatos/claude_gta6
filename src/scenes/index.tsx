@@ -111,7 +111,7 @@ const Underline: React.FC<{delay: number; width?: number}> = ({delay, width = 64
 };
 
 /* ───────── headline: manchete com selo e fonte ───────── */
-const Headline: React.FC<P<{tag?: string; title: string; source?: string; image?: string}>> = ({props, duration}) => {
+const Headline: React.FC<P<{tag?: string; title: string; source?: string; sourceLabel?: string; image?: string}>> = ({props, duration}) => {
   const bar = useEase(4, 16);
   return (
     <Stage duration={duration}>
@@ -129,7 +129,7 @@ const Headline: React.FC<P<{tag?: string; title: string; source?: string; image?
             {props.source ? (
               <Pop delay={14} dist={30}>
                 <div style={{marginTop: 26, fontFamily: BODY, fontWeight: 700, fontSize: 30, color: 'rgba(255,255,255,0.7)'}}>
-                  Fonte: <span style={{color: C.cyan}}>{props.source}</span>
+                  {props.sourceLabel ?? 'Fonte:'} <span style={{color: C.cyan}}>{props.source}</span>
                 </div>
               </Pop>
             ) : null}
@@ -251,7 +251,7 @@ const List: React.FC<P<{title: string; items: {text: string; _at: number; icon?:
                     alignItems: 'center',
                     justifyContent: 'center',
                     fontFamily: DISPLAY,
-                    fontSize: 54,
+                    fontSize: String(it.icon ?? i + 1).length > 2 ? 38 : 54,
                     color: C.white,
                   }}
                 >
@@ -693,6 +693,62 @@ const Profile: React.FC<P<{photo: string; name: string; role?: string; facts: {t
   );
 };
 
+/* ───────── bars: comparação em barras horizontais ───────── */
+// Paleta validada (dataviz): rosa para a série, ciano escurecido para o destaque; valores em texto branco.
+const BAR = {base: C.pink, highlight: '#0FA3BF'};
+
+const Bars: React.FC<P<{title: string; unit?: string; note?: string; items: {label: string; value: number; approx?: boolean; highlight?: boolean; _at: number}[]}>> = ({props, duration}) => {
+  const frame = useCurrentFrame();
+  const {fps} = useVideoConfig();
+  const max = Math.max(...props.items.map((i) => i.value));
+  const fmt = (v: number) => v.toLocaleString('pt-BR', {maximumFractionDigits: v >= 100 ? 0 : 2});
+  return (
+    <Stage duration={duration}>
+      <div style={{width: '100%'}}>
+        <Pop>
+          <div style={{...title(100), textAlign: 'center'}}>
+            <Rich text={props.title} />
+          </div>
+        </Pop>
+        <div style={{...panel, marginTop: 40, padding: '40px 36px 30px'}}>
+          {props.items.map((it, i) => {
+            const grow = spring({frame: frame - it._at, fps, config: {damping: 16, stiffness: 90, mass: 0.9}});
+            const shown = interpolate(frame, [it._at, it._at + 24], [0, it.value], clamp);
+            const color = it.highlight ? BAR.highlight : BAR.base;
+            const w = (it.value / max) * 100 * grow;
+            return (
+              <div key={i} style={{display: 'flex', alignItems: 'center', gap: 20, marginBottom: i < props.items.length - 1 ? 26 : 0, opacity: interpolate(frame, [it._at - 4, it._at + 2], [0.25, 1], clamp)}}>
+                <div style={{width: 230, flex: '0 0 230px', fontFamily: DISPLAY, fontSize: 46, color: C.white, textAlign: 'right', lineHeight: 1}}>{it.label}</div>
+                <div style={{flex: 1, position: 'relative', height: 56}}>
+                  <div
+                    style={{
+                      position: 'absolute',
+                      left: 0,
+                      top: 0,
+                      bottom: 0,
+                      width: `${w}%`,
+                      minWidth: grow > 0.02 ? 8 : 0,
+                      borderRadius: '0 8px 8px 0',
+                      background: it.approx ? `repeating-linear-gradient(135deg, ${color} 0 14px, ${color}88 14px 22px)` : color,
+                      boxShadow: it.highlight ? `0 0 34px ${C.cyan}aa, inset 0 0 0 2px ${C.cyan}` : undefined,
+                    }}
+                  />
+                </div>
+                <div style={{width: 210, flex: '0 0 210px', fontFamily: BODY, fontWeight: 900, fontSize: 40, color: C.white, whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums'}}>
+                  {it.approx ? '≈ ' : ''}
+                  {fmt(shown)}
+                  <span style={{fontSize: 26, fontWeight: 800, color: 'rgba(255,255,255,0.7)', marginLeft: 6}}>{props.unit}</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        {props.note ? <Footnote text={props.note} /> : null}
+      </div>
+    </Stage>
+  );
+};
+
 export const SCENES: Record<string, React.FC<P>> = {
   hook: Hook,
   headline: Headline,
@@ -706,4 +762,5 @@ export const SCENES: Record<string, React.FC<P>> = {
   icon: IconScene,
   iconrow: IconRow,
   profile: Profile,
+  bars: Bars,
 };
